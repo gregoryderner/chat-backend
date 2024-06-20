@@ -14,6 +14,7 @@ describe('Private Messages API', () => {
   let token;
   let userId;
 
+  // Configuração inicial antes de todos os testes
   beforeAll(async () => {
     userRepository = new UserRepository();
     await userRepository.clear();
@@ -24,6 +25,7 @@ describe('Private Messages API', () => {
     token = loginResponse.token;
   });
 
+  // Teste para recuperar mensagens privadas para um usuário autenticado
   test('should retrieve private messages for authenticated user', async () => {
     const response = await request(app)
       .get('/api/messages/private')
@@ -33,6 +35,7 @@ describe('Private Messages API', () => {
     expect(response.body).toBeInstanceOf(Array);
   });
 
+  // Teste para garantir que um usuário não autenticado não pode recuperar mensagens privadas
   test('should not retrieve private messages for unauthenticated user', async () => {
     const response = await request(app)
       .get('/api/messages/private');

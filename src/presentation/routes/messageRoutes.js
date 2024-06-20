@@ -1,21 +1,25 @@
 const express = require('express');
 const authMiddleware = require('../middlewares/authMiddleware');
-const MessageRepository = require('../../infrastructure/database/MessageRepository');
-const messageRepository = new MessageRepository();
+const requestLogger = require('../middlewares/requestLogger');
 
-const router = express.Router();
+const createMessageRoutes = (messageService, loggingService) => {
+  const router = express.Router();
 
-router.get('/private', authMiddleware, async (req, res) => {
-console.log("mesagem recebida")
-try {
-console.log(`User ${req.userId} is authenticated`);
-const messages = await messageRepository.findByReceiver(req.userId);
-console.log(`Messages retrieved: ${messages.length}`);
-res.status(200).json(messages);
-} catch (error) {
-console.error('Error retrieving messages:', error.message);
-res.status(500).json({ error: error.message });
-}
-});
+  router.use(requestLogger);
 
-module.exports = router;
+  router.get('/private', authMiddleware, async (req, res) => {
+    try {
+      loggingService.info(`User ${req.userId} is authenticated`);
+      const messages = await messageService.getMessagesByReceiver(req.userId);
+      loggingService.info(`Messages retrieved: ${messages.length}`);
+      res.status(200).json(messages);
+    } catch (error) {
+      loggingService.error('Error retrieving messages:', error.message);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  return router;
+};
+
+module.exports = createMessageRoutes;

@@ -1,10 +1,24 @@
 const express = require('express');
-const AuthController = require('../controllers/AuthController');
-const router = express.Router();
+const requestLogger = require('../middlewares/requestLogger');
 
-router.post('/register', AuthController.register);
-router.post('/login', AuthController.login);
-router.post('/storePublicKey', AuthController.storePublicKey);
-router.get('/publicKey/:userId', AuthController.getPublicKey); // New endpoint
+const createAuthRoutes = (authController) => {
+  const router = express.Router();
 
-module.exports = router;
+  router.use(requestLogger);
+
+  // Rota para registrar um novo usuário
+  router.post('/register', authController.register.bind(authController));
+
+  // Rota para login de usuário
+  router.post('/login', authController.login.bind(authController));
+
+  // Rota para armazenar a chave pública de um usuário
+  router.post('/storePublicKey', authController.storePublicKey.bind(authController));
+
+  // Rota para obter a chave pública de um usuário pelo ID
+  router.get('/publicKey/:userId', authController.getPublicKey.bind(authController));
+
+  return router;
+};
+
+module.exports = createAuthRoutes;

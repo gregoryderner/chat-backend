@@ -1,23 +1,26 @@
 const WebSocketController = require('../../presentation/controllers/WebSocketController');
-const jwt = require('jsonwebtoken');
-const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
+const WebSocketAuthService = require('../../application/services/WebSocketAuthService');
+const WebSocketMessageService = require('../../application/services/WebSocketMessageService');
+const MessageRepository = require('../database/MessageRepository');
+const UserRepository = require('../database/UserRepository');
+const { db } = require('../database/database');
+
+const messageService = new WebSocketMessageService(new MessageRepository(db), new UserRepository(db));
 
 function setupWebSocket(wss) {
   wss.on('connection', (ws, req) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const token = url.searchParams.get('token');
-    
+
     if (token) {
-      try {
-        const decoded = jwt.verify(token, SECRET_KEY);
+      const decoded = WebSocketAuthService.verifyToken(token);
+      if (decoded) {
         ws.userId = decoded.id; // Usar o campo ID do user
         console.log(`User connected: ${ws.userId}`);
-      } catch (err) {
-        console.error('Invalid token', err);
       }
     }
 
-    WebSocketController.handleConnection(ws, wss);
+    WebSocketController.handleConnection(ws, wss, messageService);
 
     ws.on('close', () => {
       WebSocketController.handleClose(ws);
