@@ -10,9 +10,9 @@ class AuthService {
     this.userRepository = new UserRepository();
   }
 
-  async register(username, password) {
+  async register(username, password, publicKey) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ id: this.generateId(), username, password: hashedPassword });
+    const user = new User({ id: this.generateId(), username, password: hashedPassword, publicKey });
     return this.userRepository.save(user);
   }
 
@@ -33,6 +33,10 @@ class AuthService {
 
   async storePublicKey(userId, publicKey) {
     await this.userRepository.storePublicKey(userId, publicKey);
+  }
+
+  async getPublicKey(userId) {
+    return this.userRepository.getPublicKey(userId);
   }
 
   generateToken(user) {
