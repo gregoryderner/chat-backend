@@ -15,6 +15,10 @@
     "jsonwebtoken": "^9.0.2",
     "node-rsa": "^1.1.1",
     "sqlite3": "^5.0.0",
+<<<<<<< HEAD
+=======
+    "uuid": "^10.0.0",
+>>>>>>> privadas
     "ws": "^7.4.5"
   },
   "devDependencies": {

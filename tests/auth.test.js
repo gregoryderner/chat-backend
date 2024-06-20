@@ -7,12 +7,13 @@ const app = express();
 setupRoutes(app);
 
 describe('Auth API', () => {
+  // Limpar o banco de dados antes de executar os testes
   beforeAll(async () => {
-    // Clear the database before running tests
     const userRepository = new UserRepository();
     await userRepository.clear();
   });
 
+  // Teste para registrar um novo usuário
   test('should register a new user', async () => {
     const response = await request(app)
       .post('/api/auth/register')
@@ -25,6 +26,7 @@ describe('Auth API', () => {
     expect(response.body.username).toBe('testuser');
   });
 
+  // Teste para fazer login com um usuário registrado
   test('should login a user', async () => {
     const response = await request(app)
       .post('/api/auth/login')

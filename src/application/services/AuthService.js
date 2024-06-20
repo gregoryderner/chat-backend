@@ -1,46 +1,38 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const UserRepository = require('../../infrastructure/database/UserRepository');
-const User = require('../../domain/entities/User');
-
-const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 
 class AuthService {
-  constructor() {
-    this.userRepository = new UserRepository();
+  constructor(userService, tokenService, hashService = bcrypt) {
+    this.userService = userService;
+    this.tokenService = tokenService;
+    this.hashService = hashService;
   }
 
-  async register(username, password) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ id: this.generateId(), username, password: hashedPassword });
-    return this.userRepository.save(user);
+  async register(username, password, publicKey) {
+    const hashedPassword = await this.hashService.hash(password, 10);
+    return this.userService.registerUser(username, hashedPassword, publicKey);
   }
 
   async login(username, password) {
-    const user = await this.userRepository.findByUsername(username);
+    const user = await this.userService.findUserByUsername(username);
     if (!user) {
       throw new Error('User not found');
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await this.hashService.compare(password, user.password);
     if (!isValidPassword) {
       throw new Error('Invalid password');
     }
 
-    const token = this.generateToken(user);
+    const token = this.tokenService.generateToken(user);
     return { user, token };
   }
 
   async storePublicKey(userId, publicKey) {
-    await this.userRepository.storePublicKey(userId, publicKey);
+    await this.userService.storeUserPublicKey(userId, publicKey);
   }
 
-  generateToken(user) {
-    return jwt.sign({ id: user.id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
-  }
-
-  generateId() {
-    return 'xxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
+  async getPublicKey(userId) {
+    return this.userService.getUserPublicKey(userId);
   }
 }
 

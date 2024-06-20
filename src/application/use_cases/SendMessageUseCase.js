@@ -1,28 +1,24 @@
 const Message = require('../../domain/entities/Message');
+const IdService = require('../services/IdService');
 const EncryptionService = require('../services/EncryptionService');
 
 class SendMessageUseCase {
-  constructor(messageRepository) {
+  constructor(messageRepository, encryptionService = new EncryptionService()) {
     this.messageRepository = messageRepository;
-    this.encryptionService = new EncryptionService();
+    this.encryptionService = encryptionService;
   }
 
   async execute({ content, sender, receiver, publicKey }) {
     const encryptedContent = this.encryptionService.encryptMessage(content, publicKey);
     const message = new Message({
-      id: this.generateId(),
-      content,
+      id: IdService.generateId(),
+      content: encryptedContent,
       sender,
       receiver,
-      timestamp: new Date(),
-      encryptedContent
+      timestamp: new Date()
     });
 
     return this.messageRepository.save(message);
-  }
-
-  generateId() {
-    return 'xxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16));
   }
 }
 

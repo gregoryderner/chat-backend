@@ -1,34 +1,22 @@
 require('dotenv').config();
-const express = require('express');
-const { createServer } = require('http');
-const WebSocket = require('ws');
-const cors = require('cors');
-
-const { setupWebSocket } = require('../infrastructure/websocket/setupWebSocket');
+const setupServer = require('./setupServer');
+const setupWebSocketServer = require('../infrastructure/websocket/setupWebSocketServer');
 const { setupRoutes } = require('../presentation/routes');
+const { createTables } = require('../infrastructure/database/migrations/createTables');
+const LoggingService = require('../presentation/services/LoggingService');
+const ConsoleLogger = require('../presentation/services/ConsoleLogger');
 
-const app = express();
-const server = createServer(app);
-
-var corsOptions = {
-  origin: 'http://localhost:3001',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
-
-app.use(cors(corsOptions))
-
-const wss = new WebSocket.Server({
-  server, path: '/ws', cors: {
-    origin: "http://localhost:3001", // Altere para a URL correta do frontend
-    methods: ["GET", "POST"]
-  }
-});
-
-setupWebSocket(wss);
-
+const loggingService = new LoggingService(new ConsoleLogger());
+const { app, server } = setupServer();
 setupRoutes(app);
+const wss = setupWebSocketServer(server);
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+
+createTables().then(() => {
+  server.listen(PORT, () => {
+    loggingService.info(`Server is running on port ${PORT}`);
+  });
+}).catch(error => {
+  loggingService.error('Error creating tables:', error);
 });
