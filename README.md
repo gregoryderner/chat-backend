@@ -3,7 +3,7 @@
 ## Estrutura de Pastas
 
 O projeto segue uma estrutura de pastas organizada de acordo com os princípios da Clean Architecture e Clean Code, facilitando a manutenção, escalabilidade e testabilidade do código. A estrutura de pastas é a seguinte:
-
+```bash
 src/
 ├── application/
 │ ├── interfaces/
@@ -22,6 +22,7 @@ src/
 │ ├── routes/
 │ └── services/
 tests/
+```
 
 
 ## Detalhamento das Pastas
