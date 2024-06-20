@@ -1,0 +1,7 @@
+coverage
+data
+database
+dist
+node_modules
+*.sh
+*.zip
