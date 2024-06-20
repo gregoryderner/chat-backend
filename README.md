@@ -78,3 +78,6 @@ A estrutura do projeto facilita a criação de testes automatizados. Cada camada
 ## Conclusão
 
 A estrutura de pastas e a escolha das tecnologias visam criar uma aplicação escalável, manutenível e testável. Sigo os princípios da Clean Architecture e Clean Code para garantir que cada parte do sistema tenha uma responsabilidade clara e seja facilmente extensível. Isso não só melhora a qualidade do código, mas também facilita o trabalho em equipe e a evolução do projeto.
+
+**Esse projeto foi desenvolvido para ser usado em conjunto com**
+*[chat-frontend](https://github.com/gregoryderner/chat-frontend.git)*
