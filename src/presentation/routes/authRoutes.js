@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
-router.post('/storePublicKey', AuthController.storePublicKey); // Novo endpoint para armazenar a chave pública
+router.post('/storePublicKey', AuthController.storePublicKey);
+router.get('/publicKey/:userId', AuthController.getPublicKey); // New endpoint
 
 module.exports = router;

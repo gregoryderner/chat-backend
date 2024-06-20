@@ -31,6 +31,16 @@ class AuthController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  static async getPublicKey(req, res) {
+    try {
+      const { userId } = req.params;
+      const publicKey = await authService.getPublicKey(userId);
+      res.status(200).json({ publicKey });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = AuthController;

@@ -41,7 +41,6 @@ class WebSocketController {
     } else {
       // Enviar mensagem apenas para o destinatário especificado
       ws.wss.clients.forEach(client => {
-        console.log(client.userId, receiver);
         if (client.readyState === ws.OPEN && client.userId === receiver) {
           client.send(JSON.stringify({ type: 'message', ...message }));
         }
